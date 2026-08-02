@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Usage Formatter Pro</title>
+
+<!-- استدعاء خط Cairo و FontAwesome للأيقونات -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- مكتبة SheetJS لقراءة ملفات الاكسيل مباشرة داخل المتصفح -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+:root {
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --success-color: #198754;
+    --success-hover: #157347;
+    --danger-color: #dc3545;
+    --danger-hover: #bb2d3b;
+    --bg-color: #f1f5f9;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --radius-lg: 12px;
+    --radius-md: 8px;
+    --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    --transition: all 0.2s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Cairo', "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.header h1 i {
+    color: var(--primary-color);
+}
+
+.header p {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* منطقة رفع ملف الاكسيل */
+.upload-box {
+    border: 2px dashed #0d6efd;
+    background: #f0f7ff;
+    padding: 15px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.upload-box:hover {
+    background: #e1f0ff;
+}
+
+.upload-box i {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.upload-box p {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.upload-box span {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+#fileInput {
+    display: none;
+}
+
+/* تقسيم واجهة العمل */
+.workspace {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+@media (min-width: 768px) {
+    .workspace {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.section-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.label-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.label-container label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.label-container label i {
+    color: var(--primary-color);
+}
+
+.char-count {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+textarea {
+    width: 100%;
+    height: 190px;
+    resize: none;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    direction: ltr;
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #0f172a;
+    background-color: #fafafa;
+    transition: var(--transition);
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+textarea::placeholder {
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    text-align: right;
+    color: #94a3b8;
+}
+
+.output-container {
+    position: relative;
+    height: 190px;
+    display: flex;
+    flex-direction: column;
+}
+
+#output {
+    flex: 1;
+    background: #f8fafc;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    direction: ltr;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    color: #334155;
+    transition: var(--transition);
+}
+
+#output.has-content {
+    background: #fff;
+    border: 2px solid var(--success-color);
+}
+
+.placeholder-text {
+    color: #94a3b8;
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    text-align: right;
+    display: block;
+}
+
+.buttons-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn {
+    flex: 1;
+    min-width: 110px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-convert {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-convert:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-copy {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-copy:hover {
+    background-color: var(--success-hover);
+}
+
+.btn-reset {
+    background-color: #f1f5f9;
+    color: var(--danger-color);
+    border: 1px solid var(--border-color);
+}
+
+.btn-reset:hover {
+    background-color: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1e293b;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+    z-index: 9999;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast i {
+    color: #4ade80;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Daily Usage Formatter Pro</h1>
+        <p>ارفق البيانات النصية يدويًا أو ارفع ملف الـ CDR (Excel) مباشرة لحساب الاستهلاك اليومي</p>
+    </div>
+
+    <!-- حقل رفع ملف الاكسيل المدمج -->
+    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+        <i class="fa-solid fa-file-excel"></i>
+        <p id="uploadStatus">رفع شيت الـ CDR أو اضغط للاستيراد</p>
+        <span>يدعم ملفات .xls و .xlsx وسيتم تصفيتها وجدولتها تلقائياً</span>
+        <input type="file" id="fileInput" accept=".xls,.xlsx" onchange="handleExcelUpload(event)">
+    </div>
+
+    <div class="workspace">
+        <!-- Input Section -->
+        <div class="section-box">
+            <div class="label-container">
+                <label for="inputText"><i class="fa-solid fa-code"></i> البيانات من ال CDR (أو لصق يدوي):</label>
+                <span class="char-count" id="inputCount">السطور: 0</span>
+            </div>
+            <textarea id="inputText" placeholder="قم بلصق البيانات يدويًا هنا في حال عدم رفع ملف اكسيل" oninput="updateLineCount()"></textarea>
+        </div>
+
+        <!-- Output Section -->
+        <div class="section-box">
+            <div class="label-container">
+                <label><i class="fa-solid fa-square-poll-horizontal"></i> النتيجة المُنسقة الجاهزة للنسخ:</label>
+            </div>
+            <div class="output-container">
+                <div id="output"><span class="placeholder-text">النتيجة المنسقة ستظهر هنا تلقائيًا...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="buttons-wrapper">
+        <button class="btn btn-convert" onclick="convertText()">
+            <i class="fa-solid fa-gear"></i> تحويل ومعالجة
+        </button>
+        <button class="btn btn-copy" onclick="copyOutput()">
+            <i class="fa-solid fa-copy"></i> نسخ النتيجة
+        </button>
+        <button class="btn btn-reset" onclick="resetAll()">
+            <i class="fa-solid fa-rotate-left"></i> إعادة التعيين
+        </button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+function updateLineCount() {
+    var text = document.getElementById("inputText").value.trim();
+    var count = text === "" ? 0 : text.split("\n").length;
+    document.getElementById("inputCount").textContent = "السطور: " + count;
+}
+
+function showToast(message, isSuccess) {
+    if (isSuccess === undefined) isSuccess = true;
+    var toast = document.getElementById("toast");
+    toast.innerHTML = isSuccess ? '<i class="fa-solid fa-circle-check"></i> ' + message : '<i class="fa-solid fa-circle-exclamation" style="color:#f87171"></i> ' + message;
+    toast.classList.add("show");
+    
+    setTimeout(function() {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
+function handleExcelUpload(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+
+    document.getElementById("uploadStatus").textContent = "جاري قراءة وتحليل الملف: " + file.name + "...";
+    
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var data = new Uint8Array(e.target.result);
+            var workbook = XLSX.read(data, { type: 'array' });
+            
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+            
+            var jsonData = XLSX.utils.sheet_to_json(worksheet);
+            
+            if (jsonData.length === 0) {
+                showToast("الملف المرفوع فارغ!", false);
+                return;
+            }
+
+            var dailyGroups = {};
+
+            jsonData.forEach(function(row) {
+                var startTimeKey = Object.keys(row).find(function(k) { return k.trim().toLowerCase() === 'start time'; });
+                var usageKey = Object.keys(row).find(function(k) { return k.trim().toLowerCase() === 'usage'; });
+
+                if (startTimeKey && usageKey) {
+                    var dateStr = String(row[startTimeKey]).trim().split(" ")[0];
+                    var bytes = parseFloat(row[usageKey]) || 0;
+
+                    if (dateStr && dateStr.indexOf("/") !== -1) {
+                        if (!dailyGroups[dateStr]) {
+                            dailyGroups[dateStr] = 0;
+                        }
+                        dailyGroups[dateStr] += bytes;
+                    }
+                }
+            });
+
+            var generatedRawText = "";
+            for (var date in dailyGroups) {
+                var gbUsage = (dailyGroups[date] / (1024 * 1024 * 1024)).toFixed(2);
+                generatedRawText += "Day " + date + " Total: " + gbUsage + " GB\n";
+            }
+
+            if (generatedRawText === "") {
+                showToast("لم يتم العثور على أعمدة الـ Start Time و Usage المطابقة لشيت الـ CDR", false);
+                document.getElementById("uploadStatus").textContent = "فشل في مطابقة البيانات.";
+                return;
+            }
+
+            document.getElementById("inputText").value = generatedRawText.trim();
+            updateLineCount();
+            document.getElementById("uploadStatus").textContent = "✅ تم استيراد " + Object.keys(dailyGroups).length + " يوماً من ملف الاكسيل بنجاح!";
+            showToast("تم استخراج بيانات الاستهلاك من ملف الـ CDR!");
+            
+            convertText();
+
+        } catch (error) {
+            console.error(error);
+            showToast("حدث خطأ أثناء معالجة ملف الاكسيل", false);
+            document.getElementById("uploadStatus").textContent = "خطأ في قراءة الشيت.";
+        }
+    };
+    
+    reader.readAsArrayBuffer(file);
+}
+
+function convertText(){
+    var input = document.getElementById("inputText").value.trim();
+    var outputDiv = document.getElementById("output");
+
+    if(input === ""){
+        outputDiv.innerHTML = '<span class="placeholder-text" style="color:#f87171;"><i class="fa-solid fa-triangle-exclamation"></i> لا توجد بيانات.</span>';
+        outputDiv.classList.remove("has-content");
+        showToast("برجاء إدخال بيانات أو رفع شيت أولاً", false);
+        return;
+    }
+
+    var lines = input.split("\n");
+    var data = [];
+
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var match = line.match(/Day\s+(\d{2})\/(\d{2})\/(\d{4})\s+Total\s*:\s*([\d.]+)\s*GB/i);
+        if(match){
+            var day = match[1];
+            var month = match[2];
+            var year = match[3];
+
+            data.push({
+                date: day + '/' + month + '/' + year,
+                usage: parseFloat(match[4]).toFixed(2),
+                sortDate: new Date(year, month - 1, day)
+            });
+        }
+    }
+
+    if(data.length === 0) {
+        outputDiv.innerHTML = '<span class="placeholder-text" style="color:#f87171;"><i class="fa-solid fa-circle-xmark"></i> الصيغة الحالية داخل الحقل غير مدعومة.</span>';
+        outputDiv.classList.remove("has-content");
+        showToast("فشل في معالجة البيانات", false);
+        return;
+    }
+
+    data.sort(function(a, b) { return a.sortDate - b.sortDate; });
+
+    var output = "";
+    for (var j = 0; j < data.length; j++) {
+        var item = data[j];
+        output += "يوم " + item.date + " استهلاك " + item.usage + " جيجابايت\n";
+        if (j < data.length - 1) {
+            output += "<p>&nbsp;</p>\n";
+        }
+    }
+
+    outputDiv.textContent = output;
+    outputDiv.classList.add("has-content");
+    showToast("تم توليد وتنسيق النتيجة بنجاح!");
+}
+
+function copyOutput(){
+    var outputDiv = document.getElementById("output");
+    
+    if(!outputDiv.classList.contains("has-content")){
+        showToast("لا يوجد محتوى لنسخه!", false);
+        return;
+    }
+
+    var text = outputDiv.textContent;
+    navigator.clipboard.writeText(text).then(function() {
+        showToast("تم نسخ النتيجة مع فواصل HTML بنجاح!");
+    }).catch(function() {
+        showToast("فشل النسخ تلقائياً", false);
+    });
+}
+
+function resetAll(){
+    document.getElementById("inputText").value = "";
+    var outputDiv = document.getElementById("output");
+    outputDiv.innerHTML = '<span class="placeholder-text">النتيجة المنسقة ستظهر هنا...</span>';
+    outputDiv.classList.remove("has-content");
+    document.getElementById("inputCount").textContent = "السطور: 0";
+    document.getElementById("uploadStatus").textContent = "اسحب وأفلت ملف شيت الـ CDR هنا أو اضغط للاستيراد";
+    document.getElementById("fileInput").value = "";
+    showToast("تم إعادة تعيين الحقول");
+}
+</script>
+
+</body>
+</html>
