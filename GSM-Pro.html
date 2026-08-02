@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>GSM Pro</title>
+
+<style>
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    font-family:Arial;
+    background:#0b1220;
+    color:#e2e8f0;
+    padding:20px;
+  }
+
+  h1{
+    text-align:center;
+    color:#38bdf8;
+    margin-top:10px;
+    margin-bottom:20px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    max-width:1200px;
+    margin:auto;
+  }
+
+  .card{
+    background:#111c36;
+    padding:18px;
+    border-radius:15px;
+  }
+
+  .title{
+    color:#38bdf8;
+    font-weight:bold;
+    margin-bottom:10px;
+  }
+
+  input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #23304f;
+    background:#0a1426;
+    color:white;
+    outline:none;
+    margin-bottom:8px;
+  }
+
+  .result{
+    margin-top:10px;
+    padding:10px;
+    border-radius:10px;
+    background:rgba(56,189,248,0.08);
+    font-weight:bold;
+    text-align:center;
+    color:#22c55e;
+  }
+
+  .total-box {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid #22c55e;
+    color: #22c55e;
+    direction: rtl;
+  }
+
+  @media(max-width:1000px){
+    .grid{ grid-template-columns:repeat(2,1fr); }
+  }
+
+  @media(max-width:650px){
+    .grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+
+<body>
+
+<h1>⚡ GSM Pro</h1>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="title">💰 Add Bill Taxes Post</div>
+    <input type="number" id="billInput" placeholder="Enter amount">
+    <div class="result" id="billResult">0</div>
+  </div>
+
+  <div class="card">
+    <div class="title">➕ Add Taxes (Prepaid)</div>
+    <input type="number" id="addTaxInput" placeholder="Enter amount">
+    <div class="result" id="addTaxResult">0</div>
+  </div>
+
+  <div class="card">
+    <div class="title">➖ Remove Taxes (Prepaid)</div>
+    <input type="number" id="removeTaxInput" placeholder="Enter amount">
+    <div class="result" id="removeTaxResult">0</div>
+  </div>
+
+  <div class="card">
+    <div class="title">📦 Convert MB</div>
+    <input type="number" id="mbInput" placeholder="Enter KB">
+    <div class="result" id="mbResult">0</div>
+  </div>
+
+  <div class="card">
+    <div class="title">⏱ Seconds → Minute</div>
+    <input type="number" id="secInput" placeholder="Enter seconds">
+    <div class="result" id="secResult">0</div>
+  </div>
+
+  <div class="card">
+    <div class="title">🧠 Bytes → MB ( GSM )</div>
+    <input type="number" id="bytesMBInput" placeholder="Enter bytes">
+    <div class="result" id="bytesMBResult">0</div>
+  </div>
+
+  <div class="card">
+    <div class="title">🧠 Bytes → GB ( ADSL )</div>
+    <input type="number" id="bytesGBInput" placeholder="Enter bytes">
+    <div class="result" id="bytesGBResult">0</div>
+  </div>
+
+  <!-- ⭐ الكارت الجديد: Bytes → MB ( X Package ) -->
+  <div class="card">
+    <div class="title">📦 Bytes → MB ( X Package )</div>
+    <input type="number" class="x-package-input" placeholder="Value 1 (Bytes)">
+    <input type="number" class="x-package-input" placeholder="Value 2 (Bytes)">
+    <input type="number" class="x-package-input" placeholder="Value 3 (Bytes)">
+    <div class="result total-box" id="xPackageResult">متبقي : 0 ميجابايتس</div>
+  </div>
+
+</div>
+
+<script>
+
+/* 💰 Bill Taxes */
+billInput.oninput = e => {
+  let x = +e.target.value;
+  if(!x){ billResult.innerText="0"; return; }
+  let base = x + 10.67;
+  let total = base + (base * 0.2312);
+  billResult.innerText = total.toFixed(2);
+};
+
+/* ➕ Add Taxes */
+addTaxInput.oninput = e => {
+  let n = +e.target.value;
+  addTaxResult.innerText = n ? (n/0.70).toFixed(2) : "0";
+};
+
+/* ➖ Remove Taxes */
+removeTaxInput.oninput = e => {
+  let g = +e.target.value;
+  removeTaxResult.innerText = g ? (g*0.70).toFixed(2) : "0";
+};
+
+/* 📦 MB */
+mbInput.oninput = e => {
+  let v = +e.target.value;
+  mbResult.innerText = v ? (v/1024).toFixed(2) : "0";
+};
+
+/* ⏱ Seconds */
+secInput.oninput = e => {
+  let v = +e.target.value;
+  secResult.innerText = v ? (v/60).toFixed(2) : "0";
+};
+
+/* 🧠 Bytes → MB */
+bytesMBInput.oninput = e => {
+  let b = +e.target.value;
+  bytesMBResult.innerText = b ? (b/(1024*1024)).toFixed(2) : "0";
+};
+
+/* 🧠 Bytes → GB */
+bytesGBInput.oninput = e => {
+  let b = +e.target.value;
+  bytesGBResult.innerText = b ? (b/(1024*1024*1024)).toFixed(2) : "0";
+};
+
+/* 📦 Bytes → MB ( X Package ) Logic */
+const xInputs = document.querySelectorAll('.x-package-input');
+const xResult = document.getElementById('xPackageResult');
+
+xInputs.forEach(input => {
+  input.oninput = () => {
+    let totalBytes = 0;
+    xInputs.forEach(i => totalBytes += (+i.value || 0));
+    let totalMB = totalBytes / (1024 * 1024);
+    xResult.innerText = `متبقي : ${totalMB.toFixed(2)} ميجابايتس`;
+  };
+});
+
+</script>
+
+</body>
+</html>
