@@ -403,6 +403,14 @@
 <script>
   const CORRECT_PASSKEY = "Chat2026";
 
+  // Check Session Status on Page Load
+  window.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('crm_authenticated') === 'true') {
+      document.getElementById('auth-overlay').classList.add('hidden');
+    }
+    enforceDarkModeOnIframes();
+  });
+
   function handleAuth(event) {
     event.preventDefault();
     const input = document.getElementById('passkey-input');
@@ -410,6 +418,7 @@
     const card = document.getElementById('auth-card');
 
     if (input.value === CORRECT_PASSKEY) {
+      sessionStorage.setItem('crm_authenticated', 'true');
       document.getElementById('auth-overlay').classList.add('hidden');
     } else {
       errorMsg.style.display = 'block';
@@ -457,8 +466,6 @@
       });
     });
   }
-
-  window.addEventListener('DOMContentLoaded', enforceDarkModeOnIframes);
 
   // Keyboard Shortcuts Protection
   window.addEventListener('keydown', function(e) {
