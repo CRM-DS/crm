@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daily Usage Formatter Pro (MB)</title>
+<title>Daily Usage GSM (MB)</title>
 
+<!-- استدعاء خط Cairo و FontAwesome للأيقونات -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -15,20 +16,21 @@
 
 <style>
 :root {
-    --primary-color: #7c3aed;
-    --primary-hover: #6d28d9;
-    --success-color: #198754;
-    --success-hover: #157347;
-    --danger-color: #dc3545;
-    --danger-hover: #bb2d3b;
-    --bg-color: #f1f5f9;
-    --card-bg: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
+    --primary-color: #8b5cf6;
+    --primary-hover: #7c3aed;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --bg-color: #0f172a;       /* خلفية داكنة رئيسية */
+    --card-bg: #1e293b;     /* خلفية الحاوية */
+    --text-main: #f8fafc;     /* لون النصوص */
+    --text-muted: #94a3b8;    /* النصوص الثانوية */
+    --border-color: #334155;  /* الحدود الداكنة */
+    --input-bg: #0f172a;      /* خلفية حقول الإدخال */
     --radius-lg: 12px;
     --radius-md: 8px;
-    --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     --transition: all 0.2s ease;
 }
 
@@ -84,9 +86,10 @@ body {
     font-size: 13px;
 }
 
+/* منطقة رفع الملف - Dark */
 .upload-box {
     border: 2px dashed var(--primary-color);
-    background: #f5f3ff;
+    background: rgba(139, 92, 246, 0.08);
     padding: 20px;
     border-radius: var(--radius-md);
     text-align: center;
@@ -96,7 +99,7 @@ body {
 }
 
 .upload-box:hover {
-    background: #ede9fe;
+    background: rgba(139, 92, 246, 0.15);
 }
 
 .upload-box i {
@@ -108,7 +111,7 @@ body {
 .upload-box p {
     font-size: 14px;
     font-weight: 600;
-    color: #475569;
+    color: #e2e8f0;
 }
 
 .upload-box span {
@@ -120,6 +123,7 @@ body {
     display: none;
 }
 
+/* تقسيم واجهة العمل */
 .workspace {
     display: grid;
     grid-template-columns: 1fr;
@@ -173,23 +177,22 @@ textarea {
     font-size: 13px;
     direction: ltr;
     font-family: 'Consolas', 'Courier New', monospace;
-    color: #0f172a;
-    background-color: #fafafa;
+    color: #f1f5f9;
+    background-color: var(--input-bg);
     transition: var(--transition);
 }
 
 textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 textarea::placeholder {
     font-family: 'Cairo', sans-serif;
     direction: rtl;
     text-align: right;
-    color: #94a3b8;
+    color: #64748b;
 }
 
 .output-container {
@@ -201,7 +204,7 @@ textarea::placeholder {
 
 #output {
     flex: 1;
-    background: #f8fafc;
+    background: var(--input-bg);
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-md);
     padding: 10px;
@@ -210,21 +213,65 @@ textarea::placeholder {
     direction: ltr;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 13px;
-    color: #334155;
+    color: #cbd5e1;
     transition: var(--transition);
 }
 
 #output.has-content {
-    background: #fff;
+    background: #0f172a;
     border: 2px solid var(--success-color);
+    color: #f8fafc;
 }
 
 .placeholder-text {
-    color: #94a3b8;
+    color: #64748b;
     font-family: 'Cairo', sans-serif;
     direction: rtl;
     text-align: right;
     display: block;
+}
+
+/* كارت إحصائيات الاستهلاك - Dark */
+.stats-box {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-item i {
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.stat-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-title {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
 }
 
 .buttons-wrapper {
@@ -272,8 +319,8 @@ textarea::placeholder {
 }
 
 .btn-reset {
-    background-color: #f1f5f9;
-    color: var(--danger-color);
+    background-color: #334155;
+    color: #f87171;
     border: 1px solid var(--border-color);
 }
 
@@ -288,7 +335,7 @@ textarea::placeholder {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #1e293b;
+    background: #334155;
     color: white;
     padding: 10px 20px;
     border-radius: 30px;
@@ -296,7 +343,8 @@ textarea::placeholder {
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    border: 1px solid var(--border-color);
     opacity: 0;
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
     z-index: 9999;
@@ -316,7 +364,7 @@ textarea::placeholder {
 
 <div class="container">
     <div class="header">
-        <h1><i class="fa-solid fa-bolt"></i> Daily Usage Formatter Pro (MB)</h1>
+        <h1><i class="fa-solid fa-bolt"></i> Daily Usage GSM (MB)</h1>
         <p>قم برفع ملف الـ CDR (Excel) لحساب الاستهلاك اليومي بـ **الميجابايت** مباشرة وبأعلى دقة</p>
     </div>
 
@@ -349,6 +397,31 @@ textarea::placeholder {
         </div>
     </div>
 
+    <!-- كارت إحصائيات الاستهلاك (تنسيق أفقي - Dark) -->
+    <div class="stats-box">
+        <div class="stat-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <div class="stat-info">
+                <span class="stat-title">متوسط الاستهلاك اليومي:</span>
+                <span class="stat-value" id="avgUsage">-- ميجابايت</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fa-solid fa-database"></i>
+            <div class="stat-info">
+                <span class="stat-title">إجمالي الاستهلاك:</span>
+                <span class="stat-value" id="totalUsage">-- ميجابايت</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fa-solid fa-calendar-days"></i>
+            <div class="stat-info">
+                <span class="stat-title">عدد الأيام المحسوبة:</span>
+                <span class="stat-value" id="totalDays">-- يوم</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Actions -->
     <div class="buttons-wrapper">
         <button class="btn btn-convert" onclick="convertText()">
@@ -371,17 +444,17 @@ var dropZone = document.getElementById('dropZone');
 
 dropZone.addEventListener('dragover', function(e) {
     e.preventDefault();
-    dropZone.style.background = '#ede9fe';
+    dropZone.style.background = 'rgba(139, 92, 246, 0.2)';
 });
 
 dropZone.addEventListener('dragleave', function(e) {
     e.preventDefault();
-    dropZone.style.background = '#f5f3ff';
+    dropZone.style.background = 'rgba(139, 92, 246, 0.08)';
 });
 
 dropZone.addEventListener('drop', function(e) {
     e.preventDefault();
-    dropZone.style.background = '#f5f3ff';
+    dropZone.style.background = 'rgba(139, 92, 246, 0.08)';
     if (e.dataTransfer.files.length > 0) {
         document.getElementById('fileInput').files = e.dataTransfer.files;
         handleExcelUpload({ target: document.getElementById('fileInput') });
@@ -482,6 +555,7 @@ function convertText(){
     if(input === ""){
         outputDiv.innerHTML = '<span class="placeholder-text" style="color:#f87171;"><i class="fa-solid fa-triangle-exclamation"></i> لا توجد بيانات.</span>';
         outputDiv.classList.remove("has-content");
+        resetStats();
         showToast("برجاء إدخال بيانات أو رفع شيت أولاً", false);
         return;
     }
@@ -499,7 +573,7 @@ function convertText(){
 
             data.push({
                 date: day + '/' + month + '/' + year,
-                usage: parseFloat(match[4]).toFixed(2),
+                usage: parseFloat(match[4]),
                 sortDate: new Date(year, month - 1, day)
             });
         }
@@ -508,6 +582,7 @@ function convertText(){
     if(data.length === 0) {
         outputDiv.innerHTML = '<span class="placeholder-text" style="color:#f87171;"><i class="fa-solid fa-circle-xmark"></i> الصيغة الحالية داخل الحقل غير مدعومة.</span>';
         outputDiv.classList.remove("has-content");
+        resetStats();
         showToast("فشل في معالجة البيانات", false);
         return;
     }
@@ -515,14 +590,29 @@ function convertText(){
     data.sort(function(a, b) { return a.sortDate - b.sortDate; });
 
     var outputLines = [];
+    var totalMbSum = 0;
+
     for (var j = 0; j < data.length; j++) {
         var item = data[j];
-        outputLines.push("يوم " + item.date + " استهلاك " + item.usage + " ميجابايت");
+        totalMbSum += item.usage;
+        outputLines.push("يوم " + item.date + " استهلاك " + item.usage.toFixed(2) + " ميجابايت");
     }
+
+    var avg = (totalMbSum / data.length).toFixed(2);
+    
+    document.getElementById("avgUsage").textContent = avg + " ميجابايت";
+    document.getElementById("totalUsage").textContent = totalMbSum.toFixed(2) + " ميجابايت";
+    document.getElementById("totalDays").textContent = data.length + " يوم";
 
     outputDiv.textContent = outputLines.join("\n<p>&nbsp;</p>\n");
     outputDiv.classList.add("has-content");
-    showToast("تم توليد وتنسيق النتيجة بنجاح!");
+    showToast("تم توليد النتيجة وحساب المتوسط بنجاح!");
+}
+
+function resetStats() {
+    document.getElementById("avgUsage").textContent = "-- ميجابايت";
+    document.getElementById("totalUsage").textContent = "-- ميجابايت";
+    document.getElementById("totalDays").textContent = "-- يوم";
 }
 
 function copyOutput(){
@@ -549,6 +639,7 @@ function resetAll(){
     document.getElementById("inputCount").textContent = "السطور: 0";
     document.getElementById("uploadStatus").textContent = "اضغط هنا أو اسحب وأفلت ملف شيت الـ CDR لاستخراج الاستهلاك";
     document.getElementById("fileInput").value = "";
+    resetStats();
     showToast("تم إعادة تعيين الحقول");
 }
 </script>
