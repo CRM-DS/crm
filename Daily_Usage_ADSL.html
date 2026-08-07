@@ -16,20 +16,21 @@
 
 <style>
 :root {
-    --primary-color: #0d6efd;
-    --primary-hover: #0b5ed7;
-    --success-color: #198754;
-    --success-hover: #157347;
-    --danger-color: #dc3545;
-    --danger-hover: #bb2d3b;
-    --bg-color: #f1f5f9;
-    --card-bg: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --bg-color: #0f172a;       /* خلفية داكنة رئيسية */
+    --card-bg: #1e293b;     /* خلفية الحاويات */
+    --text-main: #f8fafc;     /* لون النصوص الرئيسية */
+    --text-muted: #94a3b8;    /* لون النصوص الثانوية */
+    --border-color: #334155;  /* لون الحدود الداكن */
+    --input-bg: #0f172a;      /* خلفية حقول الإدخال */
     --radius-lg: 12px;
     --radius-md: 8px;
-    --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     --transition: all 0.2s ease;
 }
 
@@ -85,10 +86,10 @@ body {
     font-size: 13px;
 }
 
-/* منطقة رفع ملف الاكسيل */
+/* منطقة رفع ملف الاكسيل - Dark */
 .upload-box {
-    border: 2px dashed #0d6efd;
-    background: #f0f7ff;
+    border: 2px dashed var(--primary-color);
+    background: rgba(59, 130, 246, 0.08);
     padding: 15px;
     border-radius: var(--radius-md);
     text-align: center;
@@ -98,7 +99,7 @@ body {
 }
 
 .upload-box:hover {
-    background: #e1f0ff;
+    background: rgba(59, 130, 246, 0.15);
 }
 
 .upload-box i {
@@ -110,7 +111,7 @@ body {
 .upload-box p {
     font-size: 13px;
     font-weight: 600;
-    color: #475569;
+    color: #e2e8f0;
 }
 
 .upload-box span {
@@ -176,23 +177,22 @@ textarea {
     font-size: 13px;
     direction: ltr;
     font-family: 'Consolas', 'Courier New', monospace;
-    color: #0f172a;
-    background-color: #fafafa;
+    color: #f1f5f9;
+    background-color: var(--input-bg);
     transition: var(--transition);
 }
 
 textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 textarea::placeholder {
     font-family: 'Cairo', sans-serif;
     direction: rtl;
     text-align: right;
-    color: #94a3b8;
+    color: #64748b;
 }
 
 .output-container {
@@ -204,7 +204,7 @@ textarea::placeholder {
 
 #output {
     flex: 1;
-    background: #f8fafc;
+    background: var(--input-bg);
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-md);
     padding: 10px;
@@ -213,26 +213,27 @@ textarea::placeholder {
     direction: ltr;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 13px;
-    color: #334155;
+    color: #cbd5e1;
     transition: var(--transition);
 }
 
 #output.has-content {
-    background: #fff;
+    background: #0f172a;
     border: 2px solid var(--success-color);
+    color: #f8fafc;
 }
 
 .placeholder-text {
-    color: #94a3b8;
+    color: #64748b;
     font-family: 'Cairo', sans-serif;
     direction: rtl;
     text-align: right;
     display: block;
 }
 
-/* كارت متوسط الاستهلاك المنفصل (تنسيق أفقي) */
+/* كارت إحصائيات الاستهلاك - Dark */
 .stats-box {
-    background: #f8fafc;
+    background: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 12px 15px;
@@ -318,8 +319,8 @@ textarea::placeholder {
 }
 
 .btn-reset {
-    background-color: #f1f5f9;
-    color: var(--danger-color);
+    background-color: #334155;
+    color: #f87171;
     border: 1px solid var(--border-color);
 }
 
@@ -334,7 +335,7 @@ textarea::placeholder {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #1e293b;
+    background: #334155;
     color: white;
     padding: 10px 20px;
     border-radius: 30px;
@@ -342,7 +343,8 @@ textarea::placeholder {
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    border: 1px solid var(--border-color);
     opacity: 0;
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
     z-index: 9999;
@@ -395,7 +397,7 @@ textarea::placeholder {
         </div>
     </div>
 
-    <!-- كارت متوسط وإجمالي الاستهلاك المنفصل بالعربي -->
+    <!-- كارت متوسط وإجمالي الاستهلاك (تنسيق أفقي - Dark) -->
     <div class="stats-box">
         <div class="stat-item">
             <i class="fa-solid fa-chart-line"></i>
