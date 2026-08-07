@@ -279,6 +279,33 @@
     element.classList.add('active');
   }
 
+  // FORCE DARK MODE ON ALL IFRAMES (حقن الوضع الداكن في جميع الأدوات)
+  function enforceDarkModeOnIframes() {
+    var frames = document.querySelectorAll('.tool-frame');
+    frames.forEach(function(iframe) {
+      iframe.addEventListener('load', function() {
+        try {
+          var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          
+          // إضاقة class الوضع الداكن للـ body
+          if (iframeDoc && iframeDoc.body) {
+            iframeDoc.body.classList.add('dark-mode');
+          }
+          
+          // ضبط الـ localStorage الخاص بالصفحة الداخلية إلى dark
+          if (iframe.contentWindow && iframe.contentWindow.localStorage) {
+            iframe.contentWindow.localStorage.setItem('theme', 'dark');
+          }
+        } catch (e) {
+          console.log('Cross-origin restriction or frame load error: ', e);
+        }
+      });
+    });
+  }
+
+  // تشغيل فرض الوضع الداكن بمجرد تحميل الصفحة
+  window.addEventListener('DOMContentLoaded', enforceDarkModeOnIframes);
+
   // Keyboard Shortcuts Protection
   window.addEventListener('keydown', function(e) {
     if (
