@@ -230,6 +230,49 @@ textarea::placeholder {
     display: block;
 }
 
+/* كارت متوسط الاستهلاك المنفصل (تنسيق أفقي) */
+.stats-box {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-item i {
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.stat-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-title {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
 .buttons-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -352,6 +395,31 @@ textarea::placeholder {
         </div>
     </div>
 
+    <!-- كارت متوسط وإجمالي الاستهلاك المنفصل بالعربي -->
+    <div class="stats-box">
+        <div class="stat-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <div class="stat-info">
+                <span class="stat-title">متوسط الاستهلاك اليومي:</span>
+                <span class="stat-value" id="avgUsage">-- جيجابايت</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fa-solid fa-database"></i>
+            <div class="stat-info">
+                <span class="stat-title">إجمالي الاستهلاك:</span>
+                <span class="stat-value" id="totalUsage">-- جيجابايت</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fa-solid fa-calendar-days"></i>
+            <div class="stat-info">
+                <span class="stat-title">عدد الأيام المحسوبة:</span>
+                <span class="stat-value" id="totalDays">-- يوم</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Actions -->
     <div class="buttons-wrapper">
         <button class="btn btn-convert" onclick="convertText()">
@@ -463,6 +531,7 @@ function convertText(){
     if(input === ""){
         outputDiv.innerHTML = '<span class="placeholder-text" style="color:#f87171;"><i class="fa-solid fa-triangle-exclamation"></i> لا توجد بيانات.</span>';
         outputDiv.classList.remove("has-content");
+        resetStats();
         showToast("برجاء إدخال بيانات أو رفع شيت أولاً", false);
         return;
     }
@@ -480,7 +549,7 @@ function convertText(){
 
             data.push({
                 date: day + '/' + month + '/' + year,
-                usage: parseFloat(match[4]).toFixed(2),
+                usage: parseFloat(match[4]),
                 sortDate: new Date(year, month - 1, day)
             });
         }
@@ -489,6 +558,7 @@ function convertText(){
     if(data.length === 0) {
         outputDiv.innerHTML = '<span class="placeholder-text" style="color:#f87171;"><i class="fa-solid fa-circle-xmark"></i> الصيغة الحالية داخل الحقل غير مدعومة.</span>';
         outputDiv.classList.remove("has-content");
+        resetStats();
         showToast("فشل في معالجة البيانات", false);
         return;
     }
@@ -496,17 +566,32 @@ function convertText(){
     data.sort(function(a, b) { return a.sortDate - b.sortDate; });
 
     var output = "";
+    var totalBytesSum = 0;
+
     for (var j = 0; j < data.length; j++) {
         var item = data[j];
-        output += "يوم " + item.date + " استهلاك " + item.usage + " جيجابايت\n";
+        totalBytesSum += item.usage;
+        output += "يوم " + item.date + " استهلاك " + item.usage.toFixed(2) + " جيجابايت\n";
         if (j < data.length - 1) {
             output += "<p>&nbsp;</p>\n";
         }
     }
 
+    var avg = (totalBytesSum / data.length).toFixed(2);
+    
+    document.getElementById("avgUsage").textContent = avg + " جيجابايت";
+    document.getElementById("totalUsage").textContent = totalBytesSum.toFixed(2) + " جيجابايت";
+    document.getElementById("totalDays").textContent = data.length + " يوم";
+
     outputDiv.textContent = output;
     outputDiv.classList.add("has-content");
-    showToast("تم توليد وتنسيق النتيجة بنجاح!");
+    showToast("تم توليد النتيجة وحساب المتوسط بنجاح!");
+}
+
+function resetStats() {
+    document.getElementById("avgUsage").textContent = "-- جيجابايت";
+    document.getElementById("totalUsage").textContent = "-- جيجابايت";
+    document.getElementById("totalDays").textContent = "-- يوم";
 }
 
 function copyOutput(){
@@ -519,7 +604,7 @@ function copyOutput(){
 
     var text = outputDiv.textContent;
     navigator.clipboard.writeText(text).then(function() {
-        showToast("تم نسخ النتيجة مع فواصل HTML بنجاح!");
+        showToast("تم نسخ النتيجة بنجاح!");
     }).catch(function() {
         showToast("فشل النسخ تلقائياً", false);
     });
@@ -533,6 +618,7 @@ function resetAll(){
     document.getElementById("inputCount").textContent = "السطور: 0";
     document.getElementById("uploadStatus").textContent = "اسحب وأفلت ملف شيت الـ CDR هنا أو اضغط للاستيراد";
     document.getElementById("fileInput").value = "";
+    resetStats();
     showToast("تم إعادة تعيين الحقول");
 }
 </script>
