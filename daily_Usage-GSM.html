@@ -374,15 +374,15 @@ textarea::placeholder {
 <div class="container">
     <div class="header">
         <h1><i class="fa-solid fa-bolt"></i> Daily Usage GSM (MB)</h1>
-        <p>قم برفع ملف الـ CDR (Excel) لحساب الاستهلاك اليومي بـ **الميجابايت** مباشرة</p>
+        <p>ارفق البيانات النصية يدويًا أو ارفع ملف الـ CDR (Excel) مباشرة لحساب الاستهلاك اليومي</p>
     </div>
 
     <!-- حقل الرفع التفاعلي Moudled -->
     <div class="upload-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
         <i class="fa-solid fa-file-excel"></i>
         <div class="upload-text-group">
-            <p id="uploadStatus">اضغط هنا أو اسحب ملف شيت الـ CDR لاستخراج الاستهلاك</p>
-            <span>يدعم ملفات الاكسيل ويقوم بالتجميع التلقائي بالميجابايت (MB)</span>
+            <p id="uploadStatus">رفع شيت الـ CDR أو اضغط للاستيراد</p>
+            <span>يدعم ملفات .xls و .xlsx وسيتم تصفيتها وجدولتها تلقائياً</span>
         </div>
         <input type="file" id="fileInput" accept=".xls,.xlsx" onchange="handleExcelUpload(event)">
     </div>
